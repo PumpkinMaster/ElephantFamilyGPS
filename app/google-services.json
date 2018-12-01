@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "944959730345",
+    "firebase_url": "https://elephant-594ac.firebaseio.com",
+    "project_id": "elephant-594ac",
+    "storage_bucket": "elephant-594ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:944959730345:android:a55e026b8b4a233d",
+        "android_client_info": {
+          "package_name": "com.example.asus.elephant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "944959730345-o456r5i5kkpdpvhhq3k6ejtjk01k6pfa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMNIf-eZufkJWwFDBq8vhyQd_ZyVrYgr4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
