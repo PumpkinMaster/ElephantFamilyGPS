@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.github.GoodieBag:Pinview:v1.3'
     implementation 'com.github.karanchuri:PermissionManager:0.1.0'
     implementation 'com.mikhaellopez:circularimageview:3.0.2'
     implementation 'com.google.android.gms:play-services-maps:16.0.0'

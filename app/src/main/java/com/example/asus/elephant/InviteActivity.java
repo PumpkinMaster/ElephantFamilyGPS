@@ -63,10 +63,17 @@ public class InviteActivity extends AppCompatActivity {
                             // update Firebase real-time database.
                             // isSharing == false means that the user is not sharing his/her location.
                             // Create the User object first.
-                            CreateUser createUser = new CreateUser(name, email, password, code, "false", "N/A", "N/A");
-                            // Then get the user id from the database.
                             user = auth.getCurrentUser();
                             userID = user.getUid();
+                            CreateUser createUser = new CreateUser(name,
+                                    email,
+                                    password,
+                                    code,
+                                    "false",
+                                    "N/A",
+                                    "N/A",
+                                    user.getUid());
+                            // Then get the user id from the database.
 
                             ref.child(userID).setValue(createUser)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {

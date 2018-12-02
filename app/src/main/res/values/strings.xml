@@ -40,5 +40,9 @@
     <string name="email_not_verified">You have not verified your email.
          Please check your email and follow the Verification Email sent by Elephant Family GPS</string>
 
+    <string name="enter_code">Please enter unique code to join the herd!</string>
+    <string name="code_missing">Code does not exist!</string>
+    <string name="join_herd_success">Congrats! You have become a member of his/her Herd.</string>
+    <string name="join_herd_fail">Oh no! Unable to join his/her Herd.</string>
 
 </resources>

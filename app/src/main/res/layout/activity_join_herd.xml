@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".JoinHerdActivity">
+
+    <TextView
+        android:id="@+id/enterCode"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:layout_marginTop="100dp"
+        android:text="@string/enter_code"
+        android:textSize="20dp"/>
+
+    <com.goodiebag.pinview.Pinview
+        android:id="@+id/pinviewCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_below="@+id/enterCode"
+        android:layout_marginTop="40dp"
+        app:pinLength="4"
+        app:inputType="number"
+        app:forceKeyboard="true"></com.goodiebag.pinview.Pinview>
+
+    <Button
+        android:id="@+id/btn_join"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="151dp"
+        android:onClick="joinButton"
+        android:text="Join"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+</RelativeLayout>

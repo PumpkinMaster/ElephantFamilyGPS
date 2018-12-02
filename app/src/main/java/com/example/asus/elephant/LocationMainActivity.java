@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -62,6 +63,8 @@ public class LocationMainActivity extends AppCompatActivity
 
     String user_name;
     String user_email;
+    View header;
+    TextView name, email;
 
     // After connecting to the Google Maps API
     // Need to request user location.
@@ -80,7 +83,14 @@ public class LocationMainActivity extends AppCompatActivity
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                user_name = dataSnapshot.child()
+                user_name = dataSnapshot.child(user.getUid()).child("name").getValue(String.class);  // get that specific user.
+                // It's String.class because we want to extract a string.
+                user_email = dataSnapshot.child(user.getUid()).child("email").getValue(String.class);
+
+                // So after getting the name and email from the real time database.
+                // Update the user's information on the navigation bar accordingly.
+                name.setText(user_name);
+                email.setText(user_email);
             }
 
             @Override
@@ -88,6 +98,7 @@ public class LocationMainActivity extends AppCompatActivity
 
             }
         });
+
 
         // The Google Map!
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -102,6 +113,11 @@ public class LocationMainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        header = navigationView.getHeaderView(0);
+        name = header.findViewById(R.id.title_name);
+        email = header.findViewById(R.id.title_email);
+
     }
 
     @Override
@@ -164,13 +180,23 @@ public class LocationMainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_joinHerd) {
 
+            // finish()
+            Intent intent = new Intent(LocationMainActivity.this, JoinHerdActivity.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_inviteEllie) {
 
         } else if (id == R.id.nav_shareLocation) {
 
+            Intent myIntent = new Intent(Intent.ACTION_SEND);
+            myIntent.setType("text/plain");
+            myIntent.putExtra(Intent.EXTRA_TEXT, "I'm at: " + "https://www.google.com/maps/@" +
+            x_y.latitude + "," + x_y.longitude + ", 17z");
+            startActivity(myIntent.createChooser(myIntent, "Share location via: "));
+
         } else if (id == R.id.nav_signOut) {
 
-            FirebaseUser user = auth.getCurrentUser();
+            //FirebaseUser user = auth.getCurrentUser();
             if (user != null) {
 
                 auth.signOut();
