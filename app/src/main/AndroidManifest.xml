@@ -48,7 +48,9 @@
             android:name=".LocationMainActivity"
             android:label="@string/title_activity_location_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".JoinHerdActivity"></activity>
+        <activity android:name=".JoinHerdActivity" />
+        <activity android:name=".MyHerdActivity" />
+        <activity android:name=".OtherPeopleLocationActivity"></activity>
     </application>
 
 </manifest>

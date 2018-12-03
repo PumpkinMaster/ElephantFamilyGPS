@@ -70,8 +70,8 @@ public class InviteActivity extends AppCompatActivity {
                                     password,
                                     code,
                                     "false",
-                                    "N/A",
-                                    "N/A",
+                                    0,
+                                    0,
                                     user.getUid());
                             // Then get the user id from the database.
 

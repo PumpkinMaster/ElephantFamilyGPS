@@ -47,7 +47,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class LocationMainActivity extends AppCompatActivity
+public class OtherPeopleLocationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         com.google.android.gms.location.LocationListener {
@@ -64,11 +64,11 @@ public class LocationMainActivity extends AppCompatActivity
     DatabaseReference refInsertCoordinates;
     FirebaseUser user;
 
-    String user_name;
-    String user_email;
     View header;
     TextView name, email;
 
+    String otherPeopleName;
+    String memberId;
     double x, y;
     // After connecting to the Google Maps API
     // Need to request user location.
@@ -76,33 +76,23 @@ public class LocationMainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_main);
+        setContentView(R.layout.activity_other_people_location);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Intent intent = getIntent();
+        memberId = intent.getStringExtra("otherPeopleMemberId");
 
         auth = FirebaseAuth.getInstance();  // create the object.
         user = auth.getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                user_name = dataSnapshot.child(user.getUid()).child("name").getValue(String.class);  // get that specific user.
-                // It's String.class because we want to extract a string.
-                user_email = dataSnapshot.child(user.getUid()).child("email").getValue(String.class);
 
-                // So after getting the name and email from the real time database.
-                // Update the user's information on the navigation bar accordingly.
-                name.setText(user_name);
-                email.setText(user_email);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
+        Intent myIntent = getIntent();
+        if (myIntent!=null) {
+            otherPeopleName = myIntent.getStringExtra("otherPeople");
+        }
 
 
         // The Google Map!
@@ -122,6 +112,7 @@ public class LocationMainActivity extends AppCompatActivity
         header = navigationView.getHeaderView(0);
         name = header.findViewById(R.id.title_name);
         email = header.findViewById(R.id.title_email);
+
 
 
     }
@@ -150,8 +141,33 @@ public class LocationMainActivity extends AppCompatActivity
                 .build();
 
         client.connect();
+        ref.addValueEventListener(new ValueEventListener() {
 
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                x = dataSnapshot.child(memberId).child("x").getValue(Double.class);  // get that specific user.
+                // It's String.class because we want to extract a string.
+                y = dataSnapshot.child(memberId).child("y").getValue(Double.class);
 
+                // So after getting the name and email from the real time database.
+                // Update the user's information on the navigation bar accordingly.
+//                name.setText(x);
+//                email.setText(y);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+//        x_y = new LatLng(x, y);
+//
+//        MarkerOptions options = new MarkerOptions();
+//        options.position(x_y);
+//        options.title("Current Location");
+//
+//        mMap.addMarker(options);
 
     }
 
@@ -186,14 +202,14 @@ public class LocationMainActivity extends AppCompatActivity
 
         if (id == R.id.nav_myCircle) {
 
-            Intent intent = new Intent(LocationMainActivity.this, MyHerdActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(LocationMainActivity.this, MyHerdActivity.class);
+//            startActivity(intent);
 
         } else if (id == R.id.nav_joinHerd) {
 
             // finish()
-            Intent intent = new Intent(LocationMainActivity.this, JoinHerdActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(LocationMainActivity.this, JoinHerdActivity.class);
+//            startActivity(intent);
 
         } else if (id == R.id.nav_inviteEllie) {
 
@@ -202,7 +218,7 @@ public class LocationMainActivity extends AppCompatActivity
             Intent myIntent = new Intent(Intent.ACTION_SEND);
             myIntent.setType("text/plain");
             myIntent.putExtra(Intent.EXTRA_TEXT, "I'm at: " + "https://www.google.com/maps/@" +
-            x_y.latitude + "," + x_y.longitude + ", 17z");
+                    x_y.latitude + "," + x_y.longitude + ", 17z");
             startActivity(myIntent.createChooser(myIntent, "Share location via: "));
 
         } else if (id == R.id.nav_signOut) {
@@ -213,8 +229,8 @@ public class LocationMainActivity extends AppCompatActivity
                 auth.signOut();
                 finish();
 
-                Intent myIntent = new Intent(LocationMainActivity.this, MainActivity.class);
-                startActivity(myIntent);
+//                Intent myIntent = new Intent(LocationMainActivity.this, MainActivity.class);
+//                startActivity(myIntent);
             }
 
         } else if (id == R.id.nav_share) {
@@ -252,16 +268,14 @@ public class LocationMainActivity extends AppCompatActivity
 
     }
 
-    @Override
+//    @Override
     public void onLocationChanged(Location location) {
-
-        if (location==null) {
+//
+        if (location == null) {
             Toast.makeText(getApplicationContext(),
                     R.string.no_location,
                     Toast.LENGTH_LONG).show();
-        }
-
-        else {
+        } else {
 
             x_y = new LatLng(location.getLatitude(), location.getLongitude());
             x = location.getLatitude();
@@ -270,48 +284,6 @@ public class LocationMainActivity extends AppCompatActivity
             MarkerOptions options = new MarkerOptions();
             options.position(x_y);
             options.title("Current Location");
-            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
-                    .child("Users")
-                    .child(user.getUid())  // User A.
-                    .child("x");
-            refInsertCoordinates.setValue(x)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(),
-                                        "X inserted",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(),
-                                        R.string.join_herd_fail,
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-
-            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
-                    .child("Users")
-                    .child(user.getUid())  // User A.
-                    .child("y");
-            refInsertCoordinates.setValue(y)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Y inserted",
-                                        Toast.LENGTH_LONG).show();
-
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(),
-                                        R.string.join_herd_fail,
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
 
             mMap.addMarker(options);
         }

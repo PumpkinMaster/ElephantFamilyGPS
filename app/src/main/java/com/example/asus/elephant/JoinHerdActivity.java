@@ -63,15 +63,15 @@ public class JoinHerdActivity extends AppCompatActivity {
 
                         circleRef = FirebaseDatabase.getInstance().getReference()
                                 .child("Users")
-                                .child(joinUserId)
-                                .child("Herd Members");
+                                .child(joinUserId)  // User A.
+                                .child("herdMembers");
 
                         // Now create the herd member object by calling the UserHerd class.
                         // Sets the user asking to join herd, as a member (giving him/her a member ID).
-                        UserHerd userHerd = new UserHerd(userId);   // User B
-                        UserHerd userHerd1 = new UserHerd(joinUserId);  // User A
+                        UserHerd userHerdB = new UserHerd(userId);   // User B
+                        UserHerd userHerdA = new UserHerd(joinUserId);  // User A
 
-                        circleRef.child(user.getUid()).setValue(userHerd)
+                        circleRef.child(user.getUid()).setValue(userHerdB)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
