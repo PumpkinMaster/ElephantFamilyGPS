@@ -160,8 +160,6 @@ public class MyHerdActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new HerdAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, CreateUser obj, int position) {
-//                Snackbar.make(parent_view, "Item " + obj.name + " clicked", Snackbar.LENGTH_SHORT).show();
-//                Log.d(TAG, obj.content);
                 Intent intent = new Intent(MyHerdActivity.this, OtherPeopleLocationActivity.class);
                 intent.putExtra("otherPeople", otherPeopleName);
                 intent.putExtra("otherPeopleMemberId", herdMemberId);

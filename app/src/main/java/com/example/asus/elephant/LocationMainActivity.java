@@ -59,6 +59,7 @@ public class LocationMainActivity extends AppCompatActivity
     GoogleApiClient client;
     LocationRequest request;
     LatLng x_y;
+    Location location;
 
     DatabaseReference ref;
     DatabaseReference refInsertCoordinates;
@@ -151,6 +152,13 @@ public class LocationMainActivity extends AppCompatActivity
 
         client.connect();
 
+        // Entire app crashes when below is inserted.
+//        x_y = new LatLng(location.getLatitude(), location.getLongitude());
+//        MarkerOptions options = new MarkerOptions();
+//        options.position(x_y);
+//        options.title("Current Location");
+//
+//        mMap.addMarker(options);
 
 
     }
@@ -197,8 +205,10 @@ public class LocationMainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_inviteEllie) {
 
-        } else if (id == R.id.nav_shareLocation) {
+            // For future.
 
+        } else if (id == R.id.nav_shareLocation) {
+            // BUG!
             Intent myIntent = new Intent(Intent.ACTION_SEND);
             myIntent.setType("text/plain");
             myIntent.putExtra(Intent.EXTRA_TEXT, "I'm at: " + "https://www.google.com/maps/@" +
@@ -219,8 +229,11 @@ public class LocationMainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
 
+            // For future.
+
         } else if (id == R.id.nav_send) {
 
+            // For future.
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -267,12 +280,17 @@ public class LocationMainActivity extends AppCompatActivity
             x = location.getLatitude();
             y = location.getLongitude();
 
+//            Toast.makeText(getApplicationContext(),
+//                      "BOXXXXXXX",
+//                    Toast.LENGTH_LONG).show();
+
             MarkerOptions options = new MarkerOptions();
             options.position(x_y);
             options.title("Current Location");
+
             refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
                     .child("Users")
-                    .child(user.getUid())  // User A.
+                    .child(user.getUid())
                     .child("x");
             refInsertCoordinates.setValue(x)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -281,19 +299,19 @@ public class LocationMainActivity extends AppCompatActivity
                             if (task.isSuccessful()) {
                                 Toast.makeText(getApplicationContext(),
                                         "X inserted",
-                                        Toast.LENGTH_LONG).show();
+                                        Toast.LENGTH_SHORT).show();
                             }
                             else {
                                 Toast.makeText(getApplicationContext(),
-                                        R.string.join_herd_fail,
-                                        Toast.LENGTH_LONG).show();
+                                        "Unable to insert X",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
 
             refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
                     .child("Users")
-                    .child(user.getUid())  // User A.
+                    .child(user.getUid())
                     .child("y");
             refInsertCoordinates.setValue(y)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -302,13 +320,13 @@ public class LocationMainActivity extends AppCompatActivity
                             if (task.isSuccessful()) {
                                 Toast.makeText(getApplicationContext(),
                                         "Y inserted",
-                                        Toast.LENGTH_LONG).show();
+                                        Toast.LENGTH_SHORT).show();
 
                             }
                             else {
                                 Toast.makeText(getApplicationContext(),
-                                        R.string.join_herd_fail,
-                                        Toast.LENGTH_LONG).show();
+                                        "Unable to insert Y",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
