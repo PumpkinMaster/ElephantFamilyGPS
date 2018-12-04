@@ -85,6 +85,9 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
         Intent intent = getIntent();
         memberId = intent.getStringExtra("otherPeopleMemberId");
 
+        // Just for debugging. Returns the userId!
+//        Toast.makeText(getApplicationContext(), memberId, Toast.LENGTH_LONG).show();
+
         auth = FirebaseAuth.getInstance();  // create the object.
         user = auth.getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -148,6 +151,7 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
                 .build();
 
         client.connect();
+
         ref.addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -283,9 +287,11 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
                     Toast.LENGTH_LONG).show();
         } else {
 
-            x_y = new LatLng(5.3380064, 100.3031604);
-            x = location.getLatitude();
-            y = location.getLongitude();
+            x_y = new LatLng(x, y);
+
+            // Commented out: 02:16
+//            x = location.getLatitude();
+//            y = location.getLongitude();
 
             MarkerOptions options = new MarkerOptions();
             options.position(x_y);
@@ -294,6 +300,8 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
             mMap.addMarker(options);
         }
     }
+
+
 
 
 }

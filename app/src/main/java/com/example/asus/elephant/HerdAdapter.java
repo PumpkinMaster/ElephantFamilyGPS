@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.support.constraint.Constraints.TAG;
+
 
 public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -36,7 +38,6 @@ public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mOnItemClickListener = mItemClickListener;
     }
 
-
     HerdAdapter(ArrayList<CreateUser> membersList, Context mContext) {
         this.membersList = membersList;
         this.mContext = mContext;
@@ -48,7 +49,7 @@ public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
-
+    // The ViewHolder
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder( ViewGroup viewGroup, int i) {
@@ -58,6 +59,7 @@ public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         return mHerdViewHolder;
     }
+
     public class HerdViewHolder extends RecyclerView.ViewHolder{
         TextView mName;
         ImageView mStatus;
@@ -82,7 +84,9 @@ public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder herdViewHolder, final int i) {
-        CreateUser mUserObj = membersList.get(i);
+        Log.d(TAG, "onBindViewHolder: called.");    // for debugging purposes.
+
+        final CreateUser mUserObj = membersList.get(i);   // i is the position.
         if(herdViewHolder instanceof HerdViewHolder) {
             HerdViewHolder view = (HerdViewHolder) herdViewHolder;
             view.mName.setText(mUserObj.name);
@@ -91,6 +95,14 @@ public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onClick(View view) {
                     if (mOnItemClickListener != null) {
                         mOnItemClickListener.onItemClick(view, membersList.get(i), i);
+
+                        String memberId = mUserObj.userId;
+
+                        // This part below is for debugging purposes.
+                        // It returns jy if click on the user!
+//                        String userName = mUserObj.name;
+//                        Toast.makeText(mContext, userName, Toast.LENGTH_LONG).show();
+
                     }
                 }
             });

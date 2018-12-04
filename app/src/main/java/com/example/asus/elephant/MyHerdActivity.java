@@ -18,6 +18,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class MyHerdActivity extends AppCompatActivity {
         recyclerView = (RecyclerView)findViewById(R.id.recyclerMyHerd);
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        herdMembersList = new ArrayList<>();
+        herdMembersList = new ArrayList<>();    // Will be used to store userObj.
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -64,7 +65,6 @@ public class MyHerdActivity extends AppCompatActivity {
                 .child(user.getUid())
                 .child("herdMembers");
 
-        Log.d(TAG, herdRef.toString());
 
 //        herdMembersListString.add(herdRef.toString());
 //        herdMemberListArray = herdMembersListString.toArray(new String[herdMembersList.size()]);
@@ -133,14 +133,13 @@ public class MyHerdActivity extends AppCompatActivity {
             }
         });
 
-        herdMemberListArray = herdMembersList.toArray(new String[herdMembersList.size()]);
+        // 01:44 -> the String[] was inside toArray().
+        // This part is just for debugging.
+        String[] membersList = new String[herdMembersList.size()];
+        herdMemberListArray = herdMembersList.toArray(membersList);
         for(int i = 0; i < herdMemberListArray.length; i++){
             Log.d(TAG, herdMemberListArray[i]);
         }
-        // After you have taken care of data changes,
-        // And then let the (RecyclerView.Adapter) adapter know of those changes,
-        // It's time to set it up on the RecyclerView.
-
 
 //        TextView nameTextView = (TextView)findViewById(R.id.memberName);
 //        otherPeopleName = nameTextView.getText().toString();
@@ -153,16 +152,19 @@ public class MyHerdActivity extends AppCompatActivity {
 //                startActivity(intent);
 //            }
 //        });
+
         mAdapter = new HerdAdapter(herdMembersList, getApplicationContext());
         recyclerView.setAdapter(mAdapter);
 
-
+        // If the user clicks on a user,
+        // It will lead them to OtherPeopleLocationActivity.
         mAdapter.setOnItemClickListener(new HerdAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, CreateUser obj, int position) {
+                String memberId = obj.userId;   // Added 02:07
                 Intent intent = new Intent(MyHerdActivity.this, OtherPeopleLocationActivity.class);
                 intent.putExtra("otherPeople", otherPeopleName);
-                intent.putExtra("otherPeopleMemberId", herdMemberId);
+                intent.putExtra("otherPeopleMemberId", memberId);
                 startActivity(intent);
             }
         });
@@ -171,6 +173,31 @@ public class MyHerdActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
+
+
+//        public void memberId(View v) {
+//            Query query = usersRef.orderByChild("name").equalTo(otherPeopleName);
+//
+//            query.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.exists()) {
+//                        CreateUser createUser = null;
+//                        for(DataSnapshot childDSS : dataSnapshot.getChildren()) {
+//
+//                            createUser = childDSS.getValue(CreateUser.class);
+//                            herdMemberId = createUser.userId;
+//
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//                    Toast.makeText(getApplicationContext(), "Cancelled", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
 
 
 
