@@ -58,7 +58,9 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
     GoogleMap mMap;
     GoogleApiClient client;
     LocationRequest request;
+    Location location;
     LatLng x_y;
+    DataSnapshot dataSnapshot;
 
     DatabaseReference ref;
     DatabaseReference refInsertCoordinates;
@@ -128,6 +130,11 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
     }
 
 
+    // This is a bit different from the one in LocationMainActivity.
+    // What this should do is,
+    // 1. According to the memberId obtained from MyHerdActivity,
+    //    it should get the last known x and y of that user.
+    // 2. Then add in the marker according to that location.
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -160,6 +167,11 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
 
             }
         });
+
+        // Added time: 18:25
+//
+//        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
+//        mMap.addMarker(new MarkerOptions().position(current_location).title("Current Location!"));
 
 //        x_y = new LatLng(x, y);
 //
@@ -211,8 +223,6 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
 //            Intent intent = new Intent(LocationMainActivity.this, JoinHerdActivity.class);
 //            startActivity(intent);
 
-        } else if (id == R.id.nav_inviteEllie) {
-
         } else if (id == R.id.nav_shareLocation) {
 
             Intent myIntent = new Intent(Intent.ACTION_SEND);
@@ -232,10 +242,6 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
 //                Intent myIntent = new Intent(LocationMainActivity.this, MainActivity.class);
 //                startActivity(myIntent);
             }
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
@@ -268,7 +274,7 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
 
     }
 
-//    @Override
+    @Override
     public void onLocationChanged(Location location) {
 //
         if (location == null) {
@@ -277,7 +283,7 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
                     Toast.LENGTH_LONG).show();
         } else {
 
-            x_y = new LatLng(location.getLatitude(), location.getLongitude());
+            x_y = new LatLng(5.3380064, 100.3031604);
             x = location.getLatitude();
             y = location.getLongitude();
 

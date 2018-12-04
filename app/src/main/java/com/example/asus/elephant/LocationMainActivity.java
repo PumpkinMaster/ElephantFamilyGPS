@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,12 +30,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -58,8 +61,11 @@ public class LocationMainActivity extends AppCompatActivity
     GoogleMap mMap;
     GoogleApiClient client;
     LocationRequest request;
+    LocationManager locationManager;
     LatLng x_y;
     Location location;
+    double latitude, longitude;
+    double center;
 
     DatabaseReference ref;
     DatabaseReference refInsertCoordinates;
@@ -124,7 +130,6 @@ public class LocationMainActivity extends AppCompatActivity
         name = header.findViewById(R.id.title_name);
         email = header.findViewById(R.id.title_email);
 
-
     }
 
     @Override
@@ -152,6 +157,23 @@ public class LocationMainActivity extends AppCompatActivity
 
         client.connect();
 
+        if (location==null){
+            // Will use default location.
+//            Toast.makeText(getApplicationContext(),
+//                    "No location detected. Using default", Toast.LENGTH_SHORT).show();
+            LatLng current_location = new LatLng( 5.3223009, 100.2798323);
+            mMap.addMarker(new MarkerOptions().position(current_location).title("Current Location!"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
+        }
+        else {
+            // Will get current location.
+            latitude = location.getLatitude();
+            longitude = location.getLongitude(); // In double format.
+            // Added time: 18:22
+            LatLng current_location = new LatLng( latitude, longitude);
+            mMap.addMarker(new MarkerOptions().position(current_location).title("Current Location!"));
+        }
+
         // Entire app crashes when below is inserted.
 //        x_y = new LatLng(location.getLatitude(), location.getLongitude());
 //        MarkerOptions options = new MarkerOptions();
@@ -162,6 +184,83 @@ public class LocationMainActivity extends AppCompatActivity
 
 
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        if (location==null) {
+            Toast.makeText(getApplicationContext(),
+                    R.string.no_location,
+                    Toast.LENGTH_LONG).show();
+        }
+
+        else {
+
+            x_y = new LatLng(location.getLatitude(), location.getLongitude());
+            x = location.getLatitude();
+            y = location.getLongitude();
+
+//            Toast.makeText(getApplicationContext(),
+//                      "BOXXXXXXX",
+//                    Toast.LENGTH_LONG).show();
+
+            MarkerOptions options = new MarkerOptions();
+            options.position(x_y);
+            options.title("Current Location");
+
+            mMap.addMarker(options);
+            // This keeps the screen showing your current location.
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(x_y));
+
+            // All this does is update X coordinate in database.
+            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
+                    .child("Users")
+                    .child(user.getUid())
+                    .child("x");
+            refInsertCoordinates.setValue(x)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(),
+                                        "X inserted",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(),
+                                        "Unable to insert X",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+            // This updates the Y coordinate in the database.
+            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
+                    .child("Users")
+                    .child(user.getUid())
+                    .child("y");
+            refInsertCoordinates.setValue(y)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Y inserted",
+                                        Toast.LENGTH_SHORT).show();
+
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(),
+                                        "Unable to insert Y",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+            // mMap.addMarker(options);
+        }
+    }
+
 
 
     @Override
@@ -203,10 +302,6 @@ public class LocationMainActivity extends AppCompatActivity
             Intent intent = new Intent(LocationMainActivity.this, JoinHerdActivity.class);
             startActivity(intent);
 
-        } else if (id == R.id.nav_inviteEllie) {
-
-            // For future.
-
         } else if (id == R.id.nav_shareLocation) {
             // BUG!
             Intent myIntent = new Intent(Intent.ACTION_SEND);
@@ -227,13 +322,6 @@ public class LocationMainActivity extends AppCompatActivity
                 startActivity(myIntent);
             }
 
-        } else if (id == R.id.nav_share) {
-
-            // For future.
-
-        } else if (id == R.id.nav_send) {
-
-            // For future.
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -257,83 +345,92 @@ public class LocationMainActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Toast.makeText(getApplicationContext(),
+                "Connection failed", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Toast.makeText(getApplicationContext(),
+                "Connection suspended", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-        if (location==null) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.no_location,
-                    Toast.LENGTH_LONG).show();
-        }
-
-        else {
-
-            x_y = new LatLng(location.getLatitude(), location.getLongitude());
-            x = location.getLatitude();
-            y = location.getLongitude();
-
+// Moved: 19:15
+//    @Override
+//    public void onLocationChanged(Location location) {
+//
+//        if (location==null) {
 //            Toast.makeText(getApplicationContext(),
-//                      "BOXXXXXXX",
+//                    R.string.no_location,
 //                    Toast.LENGTH_LONG).show();
-
-            MarkerOptions options = new MarkerOptions();
-            options.position(x_y);
-            options.title("Current Location");
-
-            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
-                    .child("Users")
-                    .child(user.getUid())
-                    .child("x");
-            refInsertCoordinates.setValue(x)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(),
-                                        "X inserted",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(),
-                                        "Unable to insert X",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
-                    .child("Users")
-                    .child(user.getUid())
-                    .child("y");
-            refInsertCoordinates.setValue(y)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Y inserted",
-                                        Toast.LENGTH_SHORT).show();
-
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(),
-                                        "Unable to insert Y",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-            mMap.addMarker(options);
-        }
-    }
+//        }
+//
+//        else {
+//
+//            x_y = new LatLng(location.getLatitude(), location.getLongitude());
+//            x = location.getLatitude();
+//            y = location.getLongitude();
+//
+////            Toast.makeText(getApplicationContext(),
+////                      "BOXXXXXXX",
+////                    Toast.LENGTH_LONG).show();
+//
+//            MarkerOptions options = new MarkerOptions();
+//            options.position(x_y);
+//            options.title("Current Location");
+//
+//            mMap.addMarker(options);
+//            // This keeps the screen showing your current location.
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(x_y));
+//
+//            // All this does is update X coordinate in database.
+//            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
+//                    .child("Users")
+//                    .child(user.getUid())
+//                    .child("x");
+//            refInsertCoordinates.setValue(x)
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if (task.isSuccessful()) {
+//                                Toast.makeText(getApplicationContext(),
+//                                        "X inserted",
+//                                        Toast.LENGTH_SHORT).show();
+//                            }
+//                            else {
+//                                Toast.makeText(getApplicationContext(),
+//                                        "Unable to insert X",
+//                                        Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                    });
+//
+//            // This updates the Y coordinate in the database.
+//            refInsertCoordinates = FirebaseDatabase.getInstance().getReference()
+//                    .child("Users")
+//                    .child(user.getUid())
+//                    .child("y");
+//            refInsertCoordinates.setValue(y)
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<Void> task) {
+//                            if (task.isSuccessful()) {
+//                                Toast.makeText(getApplicationContext(),
+//                                        "Y inserted",
+//                                        Toast.LENGTH_SHORT).show();
+//
+//                            }
+//                            else {
+//                                Toast.makeText(getApplicationContext(),
+//                                        "Unable to insert Y",
+//                                        Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                    });
+//
+//            // mMap.addMarker(options);
+//        }
+//    }
 
 
 }
