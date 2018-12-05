@@ -84,7 +84,6 @@ public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder herdViewHolder, final int i) {
-        Log.d(TAG, "onBindViewHolder: called.");    // for debugging purposes.
 
         final CreateUser mUserObj = membersList.get(i);   // i is the position.
         if(herdViewHolder instanceof HerdViewHolder) {
@@ -110,11 +109,5 @@ public class HerdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    // When user clicks on his/her herd member.
-
-//        @Override
-//        public void onClick(View v) {
-//            Toast.makeText(mContext, R.string.selected_member, Toast.LENGTH_SHORT).show();
-//        }
 
 }

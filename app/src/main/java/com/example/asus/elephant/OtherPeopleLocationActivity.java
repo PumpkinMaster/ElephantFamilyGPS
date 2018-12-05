@@ -132,12 +132,8 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
         }
     }
 
-
-    // This is a bit different from the one in LocationMainActivity.
-    // What this should do is,
     // 1. According to the memberId obtained from MyHerdActivity,
     //    it should get the last known x and y of that user.
-    // 2. Then add in the marker according to that location.
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -156,14 +152,10 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 x = dataSnapshot.child(memberId).child("x").getValue(Double.class);  // get that specific user.
-                // It's String.class because we want to extract a string.
                 y = dataSnapshot.child(memberId).child("y").getValue(Double.class);
 
-                // So after getting the name and email from the real time database.
-                // Update the user's information on the navigation bar accordingly.
-//                name.setText(x);
-//                email.setText(y);
             }
 
             @Override
@@ -171,19 +163,6 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
 
             }
         });
-
-        // Added time: 18:25
-//
-//        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
-//        mMap.addMarker(new MarkerOptions().position(current_location).title("Current Location!"));
-
-//        x_y = new LatLng(x, y);
-//
-//        MarkerOptions options = new MarkerOptions();
-//        options.position(x_y);
-//        options.title("Current Location");
-//
-//        mMap.addMarker(options);
 
     }
 
@@ -213,27 +192,24 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        // This part isn't necessary for this activity.
+        // But it is left here for future developments.
         int id = item.getItemId();
 
         if (id == R.id.nav_myCircle) {
 
-//            Intent intent = new Intent(LocationMainActivity.this, MyHerdActivity.class);
-//            startActivity(intent);
 
         } else if (id == R.id.nav_joinHerd) {
 
-            // finish()
-//            Intent intent = new Intent(LocationMainActivity.this, JoinHerdActivity.class);
-//            startActivity(intent);
+
 
         } else if (id == R.id.nav_shareLocation) {
 
-            Intent myIntent = new Intent(Intent.ACTION_SEND);
-            myIntent.setType("text/plain");
-            myIntent.putExtra(Intent.EXTRA_TEXT, "I'm at: " + "https://www.google.com/maps/@" +
-                    x_y.latitude + "," + x_y.longitude + ", 17z");
-            startActivity(myIntent.createChooser(myIntent, "Share location via: "));
+//            Intent myIntent = new Intent(Intent.ACTION_SEND);
+//            myIntent.setType("text/plain");
+//            myIntent.putExtra(Intent.EXTRA_TEXT, "I'm at: " + "https://www.google.com/maps/@" +
+//                    x_y.latitude + "," + x_y.longitude + ", 17z");
+//            startActivity(myIntent.createChooser(myIntent, "Share location via: "));
 
         } else if (id == R.id.nav_signOut) {
 
@@ -243,8 +219,6 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
                 auth.signOut();
                 finish();
 
-//                Intent myIntent = new Intent(LocationMainActivity.this, MainActivity.class);
-//                startActivity(myIntent);
             }
 
         }
@@ -280,7 +254,7 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(Location location) {
-//
+
         if (location == null) {
             Toast.makeText(getApplicationContext(),
                     R.string.no_location,
@@ -288,10 +262,6 @@ public class OtherPeopleLocationActivity extends AppCompatActivity
         } else {
 
             x_y = new LatLng(x, y);
-
-            // Commented out: 02:16
-//            x = location.getLatitude();
-//            y = location.getLongitude();
 
             MarkerOptions options = new MarkerOptions();
             options.position(x_y);

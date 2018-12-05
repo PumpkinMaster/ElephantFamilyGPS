@@ -61,11 +61,11 @@ public class LocationMainActivity extends AppCompatActivity
     GoogleMap mMap;
     GoogleApiClient client;
     LocationRequest request;
-    LocationManager locationManager;
     LatLng x_y;
     Location location;
     double latitude, longitude;
     double center;
+    double lastKnownX, lastKnownY;
 
     DatabaseReference ref;
     DatabaseReference refInsertCoordinates;
@@ -94,9 +94,13 @@ public class LocationMainActivity extends AppCompatActivity
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                user_name = dataSnapshot.child(user.getUid()).child("name").getValue(String.class);  // get that specific user.
+                // get that specific user.
+                user_name = dataSnapshot.child(user.getUid()).child("name").getValue(String.class);
                 // It's String.class because we want to extract a string.
                 user_email = dataSnapshot.child(user.getUid()).child("email").getValue(String.class);
+
+                lastKnownX = dataSnapshot.child(user.getUid()).child("x").getValue(Double.class);
+                lastKnownY = dataSnapshot.child(user.getUid()).child("y").getValue(Double.class);
 
                 // So after getting the name and email from the real time database.
                 // Update the user's information on the navigation bar accordingly.
@@ -158,30 +162,18 @@ public class LocationMainActivity extends AppCompatActivity
         client.connect();
 
         if (location==null){
-            // Will use default location.
-//            Toast.makeText(getApplicationContext(),
-//                    "No location detected. Using default", Toast.LENGTH_SHORT).show();
-            LatLng current_location = new LatLng( 5.3223009, 100.2798323);
+            // Will firstly show last known location according to user's X and Y in database.
+            LatLng current_location = new LatLng( lastKnownX, lastKnownY);
             mMap.addMarker(new MarkerOptions().position(current_location).title("Current Location!"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
         }
         else {
-            // Will get current location.
             latitude = location.getLatitude();
             longitude = location.getLongitude(); // In double format.
-            // Added time: 18:22
             LatLng current_location = new LatLng( latitude, longitude);
             mMap.addMarker(new MarkerOptions().position(current_location).title("Current Location!"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
         }
-
-        // Entire app crashes when below is inserted.
-//        x_y = new LatLng(location.getLatitude(), location.getLongitude());
-//        MarkerOptions options = new MarkerOptions();
-//        options.position(x_y);
-//        options.title("Current Location");
-//
-//        mMap.addMarker(options);
-
 
     }
 
@@ -199,10 +191,6 @@ public class LocationMainActivity extends AppCompatActivity
             x_y = new LatLng(location.getLatitude(), location.getLongitude());
             x = location.getLatitude();
             y = location.getLongitude();
-
-//            Toast.makeText(getApplicationContext(),
-//                      "BOXXXXXXX",
-//                    Toast.LENGTH_LONG).show();
 
             MarkerOptions options = new MarkerOptions();
             options.position(x_y);
@@ -257,7 +245,6 @@ public class LocationMainActivity extends AppCompatActivity
                         }
                     });
 
-            // mMap.addMarker(options);
         }
     }
 

@@ -61,7 +61,6 @@ public class InviteActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // update Firebase real-time database.
-                            // isSharing == false means that the user is not sharing his/her location.
                             // Create the User object first.
                             user = auth.getCurrentUser();
                             userID = user.getUid();

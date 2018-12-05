@@ -65,15 +65,6 @@ public class MyHerdActivity extends AppCompatActivity {
                 .child(user.getUid())
                 .child("herdMembers");
 
-
-//        herdMembersListString.add(herdRef.toString());
-//        herdMemberListArray = herdMembersListString.toArray(new String[herdMembersList.size()]);
-//        DataSnapshot dataset;
-//
-//        for(int i = 0; i < herdMemberListArray.length; i++){
-//            Log.d(TAG, herdMemberListArray[i]);
-//        }
-
         // This is responsible for updating the 'My Herd' of a user.
         herdRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -85,11 +76,11 @@ public class MyHerdActivity extends AppCompatActivity {
                 // So if there is data in the herdRef,
                 // List out every herd members.
                 if (dataSnapshot.exists()) {
+
                     for (DataSnapshot dss: dataSnapshot.getChildren()) {
+
                         // for each member, get his/her member ID.
                         herdMemberId = dss.child("memberId").getValue(String.class);
-//                        Log.d(TAG, herdMemberId);
-                        Log.d(TAG, "Testing 1 2 3");
 
                         // Remember that usersRef points towards the general Users.
                         // So usersRef.child(herdMemberId) points towards that particular member's own node.
@@ -102,7 +93,6 @@ public class MyHerdActivity extends AppCompatActivity {
                                 // I want the user object.
                                 userObj = dataSnapshot.getValue(CreateUser.class);
                                 // Now add it to the list.
-                                Log.d(TAG, "Testing 1 2 3");
 
                                 herdMembersList.add(userObj);
                                 mAdapter.notifyDataSetChanged(); // Exactly what it says.
@@ -120,7 +110,7 @@ public class MyHerdActivity extends AppCompatActivity {
 
                     }
                 } else {
-                    Log.d(TAG, "DataSnapshot is empty");
+                    Toast.makeText(getApplicationContext(), "DataSnapshot is empty", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -133,25 +123,12 @@ public class MyHerdActivity extends AppCompatActivity {
             }
         });
 
-        // 01:44 -> the String[] was inside toArray().
         // This part is just for debugging.
         String[] membersList = new String[herdMembersList.size()];
         herdMemberListArray = herdMembersList.toArray(membersList);
         for(int i = 0; i < herdMemberListArray.length; i++){
             Log.d(TAG, herdMemberListArray[i]);
         }
-
-//        TextView nameTextView = (TextView)findViewById(R.id.memberName);
-//        otherPeopleName = nameTextView.getText().toString();
-//        nameTextView.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v){
-//                Intent intent = new Intent(MyHerdActivity.this, OtherPeopleLocationActivity.class);
-//                intent.putExtra("otherPeople", otherPeopleName);
-//                intent.putExtra("otherPeopleMemberId", herdMemberId);
-//                startActivity(intent);
-//            }
-//        });
 
         mAdapter = new HerdAdapter(herdMembersList, getApplicationContext());
         recyclerView.setAdapter(mAdapter);
@@ -170,37 +147,7 @@ public class MyHerdActivity extends AppCompatActivity {
         });
 
         mAdapter.notifyDataSetChanged();
-
-
-        Intent intent = getIntent();
-
-
-//        public void memberId(View v) {
-//            Query query = usersRef.orderByChild("name").equalTo(otherPeopleName);
-//
-//            query.addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.exists()) {
-//                        CreateUser createUser = null;
-//                        for(DataSnapshot childDSS : dataSnapshot.getChildren()) {
-//
-//                            createUser = childDSS.getValue(CreateUser.class);
-//                            herdMemberId = createUser.userId;
-//
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//                    Toast.makeText(getApplicationContext(), "Cancelled", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        }
-
-
-
+        Intent intent = getIntent();    // does not affect code.
 
     }
 
